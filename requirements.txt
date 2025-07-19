@@ -1,0 +1,11 @@
+langchain
+openai
+faiss-cpu
+llama-index
+python-dotenv
+PyPDF2
+tiktoken
+fastapi
+uvicorn
+transformers
+sentence-transformers
