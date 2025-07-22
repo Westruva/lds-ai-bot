@@ -6,3 +6,4 @@ python-dotenv
 faiss-cpu
 PyPDF2
 flask
+twilio
