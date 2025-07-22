@@ -19,4 +19,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["python", "whatsapp_bot.py"]
+RUN echo "📁 Contents of /app:" && ls -R /app
+
+CMD ["python", "app/whatsapp_bot.py"]
