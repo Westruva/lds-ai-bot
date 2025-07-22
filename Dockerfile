@@ -19,6 +19,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-WORKDIR /app/app
-
-CMD ["python", "whatsapp_bot.py"]
+# Run lds_ai.py before starting Flask server
+CMD ["sh", "-c", "python app/lds_ai.py && python app/whatsapp_bot.py"]
