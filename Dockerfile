@@ -19,4 +19,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["bash", "-c", "python app/lds_ai.py && python app/whatsapp_bot.py"]
+RUN chmod +x start.sh
+
+CMD ["./start.sh"]
