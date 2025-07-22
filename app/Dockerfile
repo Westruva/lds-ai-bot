@@ -19,4 +19,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["python", "app/lds_ai.py"]
+CMD ["python", "app/whatsapp_bot.py"]
