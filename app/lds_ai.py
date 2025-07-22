@@ -52,16 +52,22 @@ def build_or_load_vector_store(new_chunks):
         print("📂 Loading existing FAISS index...")
         vectorstore = FAISS.load_local(index_dir, embeddings, allow_dangerous_deserialization=True)
     else:
+        if not new_chunks:
+            print("🚫 No new chunks found. Skipping FAISS index creation.")
+            return None
         print("📦 Creating new FAISS index...")
-        vectorstore = FAISS.from_documents([], embeddings)
+        vectorstore = FAISS.from_documents(new_chunks, embeddings)
+        vectorstore.save_local(index_dir)
+        print("✅ New FAISS index saved.")
+        return vectorstore
 
     if new_chunks:
-        print("✨ Embedding new chunks in batches...")
+        print("✨ Adding new chunks to existing index...")
         for batch in embed_in_batches(new_chunks):
             vectorstore.add_documents(batch)
-            time.sleep(1)  # respect API limits
+            time.sleep(1)
         vectorstore.save_local(index_dir)
-        print("✅ Embedding complete.")
+        print("✅ Index updated with new chunks.")
     else:
         print("✅ No new PDFs to embed.")
 
