@@ -27,4 +27,4 @@ COPY . .
 RUN echo "📁 Final contents of /app:" && ls -R /app
 
 # Run the bot script
-CMD ["python", "app/whatsapp_bot.py"]
+CMD ["python", "whatsapp_bot.py"]
