@@ -63,7 +63,7 @@ def build_or_load_vector_store(new_chunks):
 
     if new_chunks:
         print("✨ Adding new chunks to existing index...")
-        for batch in embed_in_batches(new_chunks):
+        for batch in embed_in_batches(new_chunks, batch_size=50):
             vectorstore.add_documents(batch)
             time.sleep(1)
         vectorstore.save_local(index_dir)
