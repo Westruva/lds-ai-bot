@@ -56,8 +56,13 @@ def build_or_load_vector_store(new_chunks):
             print("🚫 No new chunks found. Skipping FAISS index creation.")
             return None
         print("📦 Creating new FAISS index...")
-        vectorstore = FAISS.from_documents(new_chunks, embeddings)
-        vectorstore.save_local(index_dir)
+        vectorstore = FAISS.from_documents([], embeddings)  # empty index
+        print("✨ Embedding new chunks in batches...")
+        for batch in embed_in_batches(new_chunks, batch_size=100):
+            vectorstore.add_documents(batch)
+            time.sleep(1)
+
+vectorstore.save_local(index_dir)
         print("✅ New FAISS index saved.")
         return vectorstore
 
