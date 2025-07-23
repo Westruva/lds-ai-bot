@@ -62,7 +62,7 @@ def build_or_load_vector_store(new_chunks):
             vectorstore.add_documents(batch)
             time.sleep(1)
 
-vectorstore.save_local(index_dir)
+        vectorstore.save_local(index_dir)
         print("✅ New FAISS index saved.")
         return vectorstore
 
@@ -108,4 +108,4 @@ with open(processed_file_log, "wb") as f:
     pickle.dump(processed_files, f)
 
 # 🧠 Ready for chatbot use
-print("🧠 LDS AI is ready.")
+print("🧠 LDS AI is ready.")    
