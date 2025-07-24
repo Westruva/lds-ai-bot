@@ -63,22 +63,30 @@ def build_or_load_vector_store(new_chunks):
         print("✨ Embedding new chunks in batches...")
         for i, batch in enumerate(embed_in_batches(new_chunks)):
             if not batch:
-                continue  # Skip empty batch
+                continue  # 🔒 Skip empty batches
 
             if vectorstore is None:
-                vectorstore = FAISS.from_documents(batch, embeddings)
+                if len(batch) > 0:
+                    vectorstore = FAISS.from_documents(batch, embeddings)
             else:
                 vectorstore.add_documents(batch)
             time.sleep(1)
 
         # Save if index was created
         if vectorstore:
+            Path(index_dir).mkdir(parents=True, exist_ok=True)  # ✅ Ensure folder exists
             vectorstore.save_local(index_dir)
             print("✅ FAISS index saved.")
+        else:
+            print("⚠️ No valid documents to create FAISS index.")
     else:
         print("✅ No new PDFs to embed.")
 
     return vectorstore
+
+if vectorstore is None:
+    print("❌ FAISS index could not be created. Exiting.")
+    exit(1)
 
 # 💾 Load or initialize processed files log
 if os.path.exists(processed_file_log):
