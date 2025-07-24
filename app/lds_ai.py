@@ -50,25 +50,28 @@ def embed_in_batches(docs, batch_size=100):
 def build_or_load_vector_store(new_chunks):
     vectorstore = None
 
-    # Load if already exists
+    # Try to load existing index
     if Path(index_dir).exists():
         print("📂 Loading existing FAISS index...")
         try:
             vectorstore = FAISS.load_local(index_dir, embeddings, allow_dangerous_deserialization=True)
         except Exception as e:
-            print(f"⚠️ Error loading FAISS index: {e}")
+            print(f"⚠️ Could not load FAISS index: {e}")
 
-    # Embed and create index if new data is found
+    # If new chunks exist, embed and add them
     if new_chunks:
         print("✨ Embedding new chunks in batches...")
         for i, batch in enumerate(embed_in_batches(new_chunks)):
+            if not batch:
+                continue  # Skip empty batch
+
             if vectorstore is None:
                 vectorstore = FAISS.from_documents(batch, embeddings)
             else:
                 vectorstore.add_documents(batch)
             time.sleep(1)
 
-        # Save only if index was built
+        # Save if index was created
         if vectorstore:
             vectorstore.save_local(index_dir)
             print("✅ FAISS index saved.")
