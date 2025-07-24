@@ -50,9 +50,9 @@ def embed_in_batches(docs, batch_size=100):
 def build_or_load_vector_store(new_chunks):
     vectorstore = None
     if vectorstore:
-    Path(index_dir).mkdir(parents=True, exist_ok=True)
-    vectorstore.save_local(index_dir)
-    print("✅ FAISS index saved.")
+        Path(index_dir).mkdir(parents=True, exist_ok=True)
+        vectorstore.save_local(index_dir)
+        print("✅ FAISS index saved.")
 
     # Debug: list saved files
     print("Saved files:", os.listdir(index_dir))
