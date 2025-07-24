@@ -6,12 +6,20 @@ from langchain_openai import ChatOpenAI
 from langchain_community.vectorstores.faiss import FAISS
 from langchain.memory import ConversationBufferMemory
 from langchain_openai import OpenAIEmbeddings
+from pathlib import Path
 
 # Set up environment
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY not set in environment variables")
 
+index_dir = "faiss_index"
+
+# Check if the index file exists
+if not Path(index_dir).joinpath("index.faiss").exists():
+    raise FileNotFoundError(f"❌ FAISS index not found at {index_dir}/index.faiss. Run lds_ai.py first to create it.")
+
+vectorstore = FAISS.load_local(index_dir, embeddings, allow_dangerous_deserialization=True)
 # Load vector store
 embeddings = OpenAIEmbeddings()
 vectorstore = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
