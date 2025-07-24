@@ -84,6 +84,13 @@ def build_or_load_vector_store(new_chunks):
 
     return vectorstore
 
+if vectorstore:
+    Path(index_dir).mkdir(parents=True, exist_ok=True)
+    vectorstore.save_local(index_dir)
+    print("✅ FAISS index saved.")
+
+    # Debug: list saved files
+    print("Saved files:", os.listdir(index_dir))
 
 
 # 💾 Load or initialize processed files log
