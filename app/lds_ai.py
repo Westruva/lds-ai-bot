@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 # 🗂️ CONFIG
 load_dotenv() 
 pdf_folder = "data"
-index_dir = "faiss_index"
+index_dir = "/faiss_index"
 processed_file_log = "processed_files.pkl"
 openai_api_key = os.getenv("OPENAI_API_KEY")
 
