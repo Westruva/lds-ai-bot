@@ -13,7 +13,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY not set in environment variables")
 
-index_dir = "faiss_index"
+index_dir = "/faiss_index"
 
 # Check if the index file exists
 if not Path(index_dir).joinpath("index.faiss").exists():
