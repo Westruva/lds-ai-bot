@@ -123,46 +123,42 @@ def run_lds_pipeline():
     print("🧠 LDS AI is ready.")
     return vectorstore
 
-# 📱 Start WhatsApp bot
-def run_whatsapp_bot(vectorstore):
-    retriever = vectorstore.as_retriever()
-    memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-    chat_model = ChatOpenAI(temperature=0)
+# 🌐 Global Flask app instance
+app = Flask(__name__)
 
-    qa_chain = ConversationalRetrievalChain.from_llm(
-        llm=chat_model,
-        retriever=retriever,
-        memory=memory
-    )
+# 🔁 Initialize once
+vectorstore = run_lds_pipeline()
+retriever = vectorstore.as_retriever()
+memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+chat_model = ChatOpenAI(temperature=0)
 
-    app = Flask(__name__)
+qa_chain = ConversationalRetrievalChain.from_llm(
+    llm=chat_model,
+    retriever=retriever,
+    memory=memory
+)
 
-    def whatsapp_webhook():
-        incoming_msg = request.values.get("Body", "").strip()
-        print(f"[WhatsApp Incoming]: {incoming_msg}")
+# 📞 WhatsApp webhook
+def whatsapp_webhook():
+    incoming_msg = request.values.get("Body", "").strip()
+    print(f"[WhatsApp Incoming]: {incoming_msg}")
 
-        if incoming_msg:
-            result = qa_chain.invoke({"question": incoming_msg})
-            reply = result["answer"]
-        else:
-            reply = "Please send a message to begin."
+    if incoming_msg:
+        result = qa_chain.invoke({"question": incoming_msg})
+        reply = result["answer"]
+    else:
+        reply = "Please send a message to begin."
 
-        print(f"[LDS AI Reply]: {reply}")
-        twilio_response = MessagingResponse()
-        twilio_response.message(reply)
-        return str(twilio_response)
+    print(f"[LDS AI Reply]: {reply}")
+    twilio_response = MessagingResponse()
+    twilio_response.message(reply)
+    return str(twilio_response)
 
-    @app.route("/", methods=["POST"])
-    def root_webhook():
-        return whatsapp_webhook()
+# 🌍 Define routes
+@app.route("/", methods=["POST"])
+def root_webhook():
+    return whatsapp_webhook()
 
-    @app.route("/webhook", methods=["POST"])
-    def webhook():
-        return whatsapp_webhook()
-
-    app.run(debug=True)
-
-# 🔁 Run both together
-if __name__ == "__main__":
-    vectorstore = run_lds_pipeline()
-    run_whatsapp_bot(vectorstore)
+@app.route("/webhook", methods=["POST"])
+def webhook():
+    return whatsapp_webhook()
