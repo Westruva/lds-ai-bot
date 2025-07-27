@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 # 🗂️ CONFIG
 load_dotenv() 
 pdf_folder = "data"
-index_dir = "/faiss_index"
+index_dir = "faiss_index"
 processed_file_log = "processed_files.pkl"
 openai_api_key = os.getenv("OPENAI_API_KEY")
 
@@ -50,47 +50,43 @@ def embed_in_batches(docs, batch_size=100):
 def build_or_load_vector_store(new_chunks):
     vectorstore = None
 
-    if not os.path.exists(index_dir):
-        os.makedirs(index_dir)
-        print(f"📁 Created missing directory: {index_dir}")
-
-    try:
-        if os.path.exists(f"{index_dir}/index.faiss"):
-            print("📂 FAISS index file found. Loading existing index...")
+    # Try to load existing index
+    if Path(index_dir).exists():
+        print("📂 Loading existing FAISS index...")
+        try:
             vectorstore = FAISS.load_local(index_dir, embeddings, allow_dangerous_deserialization=True)
-            print("✅ Successfully loaded FAISS index.")
-        else:
-            print("⚠️ No existing FAISS index found.")
-    except Exception as e:
-        print(f"⚠️ Error loading FAISS index: {e}")
+        except Exception as e:
+            print(f"⚠️ Could not load FAISS index: {e}")
 
+    # If new chunks exist, embed and add them
     if new_chunks:
-        print(f"🧾 New Chunks to Embed: {len(new_chunks)}")
-
+        print("✨ Embedding new chunks in batches...")
         for i, batch in enumerate(embed_in_batches(new_chunks)):
             if not batch:
-                continue
+                continue  # 🔒 Skip empty batches
 
             if vectorstore is None:
-                vectorstore = FAISS.from_documents(batch, embeddings)
-                print(f"🔧 Created new FAISS index with batch {i+1}")
+                if len(batch) > 0:
+                    vectorstore = FAISS.from_documents(batch, embeddings)
             else:
                 vectorstore.add_documents(batch)
-                print(f"➕ Added batch {i+1} to existing index")
-
             time.sleep(1)
 
-        vectorstore.save_local(index_dir)
-        print(f"✅ FAISS index saved to '{index_dir}'")
-        try:
-            print("📦 Saved index files:", os.listdir(index_dir))
-        except Exception as e:
-            print(f"⚠️ Could not list index_dir contents: {e}")
+        # Save if index was created
+        if vectorstore:
+            Path(index_dir).mkdir(parents=True, exist_ok=True)  # ✅ Ensure folder exists
+            vectorstore.save_local(index_dir)
+            print("✅ FAISS index saved.")
+        else:
+            print("⚠️ No valid documents to create FAISS index.")
     else:
-        print("⚠️ No new chunks — skipping FAISS index save.")
+        print("✅ No new PDFs to embed.")
 
     return vectorstore
 
+if vectorstore is None:
+    print("❌ FAISS index could not be created. Exiting.")
+    exit(1)
 
 # 💾 Load or initialize processed files log
 if os.path.exists(processed_file_log):
