@@ -92,9 +92,6 @@ def build_or_load_vector_store(new_chunks):
 
     return vectorstore
 
-if vectorstore is None:
-    print("❌ FAISS index could not be created. Exiting.")
-    exit(1)
 
 # 💾 Load or initialize processed files log
 if os.path.exists(processed_file_log):
