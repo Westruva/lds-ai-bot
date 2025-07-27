@@ -1,12 +1,15 @@
-langchain-openai
+flask
+gunicorn
+twilio
+python-dotenv
+
+# LangChain + integrations
 langchain
 langchain-community
-openai
-tiktoken
-python-dotenv
+sentence-transformers
+transformers
+huggingface-hub
 faiss-cpu
-PyPDF2
-flask
-twilio
-pypdf
 
+# Optional utilities (small footprint)
+tqdm
