@@ -12,20 +12,17 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import FAISS
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from langchain.embeddings import HuggingFaceEmbeddings  # ✅ NEW
+from langchain.chat_models import ChatOpenAI
 
 # 🔧 CONFIG
 load_dotenv()
-openai_api_key = os.getenv("OPENAI_API_KEY")
-if not openai_api_key:
-    raise ValueError("OPENAI_API_KEY not set in environment variables")
-
 pdf_folder = "data"
 index_dir = "faiss_index"
 processed_file_log = "processed_files.pkl"
 
-# 🧠 Set up embeddings
-embeddings = OpenAIEmbeddings()
+# 🧠 HuggingFace embeddings (no API required!)
+embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en-v1.5")
 
 # 📘 Load PDFs
 def load_pdfs(folder):
